@@ -11,6 +11,10 @@ Vue.use(ElementUI)
 Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
 axios.defaults.baseURL = 'http://47.115.124.102:8888/api/private/v1/'
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
 new Vue({
   router,
   render: h => h(App)
