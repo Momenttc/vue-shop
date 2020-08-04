@@ -2,6 +2,7 @@ body,html,#app{
   height: 100%;
   padding: 0;
   margin: 0;
+  min-width: 1336px;
 }
 .el-breadcrumb{
   margin-bottom: 15px;
@@ -14,4 +15,7 @@ body,html,#app{
   font-weight: normal;
   font-size: 12px;
   margin-top: 15px;
+}
+.cell{
+  text-align: center;
 }

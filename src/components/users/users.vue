@@ -40,7 +40,7 @@
             <el-switch v-model="slotProps.row.mg_state" @change="changeUsersState(slotProps.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="操作">
+        <el-table-column prop="address" label="操作" width="300px">
           <template v-slot="slotProps">
             <el-button
               type="primary"
@@ -48,9 +48,19 @@
               size="mini"
               @click="editDialog(slotProps.row.id)"
             ></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click='delUser(slotProps.row.id)'></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="delUser(slotProps.row.id)"
+            ></el-button>
             <el-tooltip content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="setRole(slotProps.row)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -88,21 +98,43 @@
       </span>
     </el-dialog>
     <!-- 编辑对话框区域 -->
-    <el-dialog title="编辑用户" :visible.sync="showEdit" width="50%"  @close='editDialogClose'>
-      <el-form ref="selectEditRef" :model="selectEdit" :rules='selectEditRules' label-width="80px">
+    <el-dialog title="编辑用户" :visible.sync="showEdit" width="50%" @close="editDialogClose">
+      <el-form ref="selectEditRef" :model="selectEdit" :rules="selectEditRules" label-width="80px">
         <el-form-item label="用户名">
           <el-input v-model="selectEdit.username" disabled></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop='email'>
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="selectEdit.email"></el-input>
         </el-form-item>
-        <el-form-item label="电话" prop='mobile'>
+        <el-form-item label="电话" prop="mobile">
           <el-input v-model="selectEdit.mobile"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showEdit = false">取 消</el-button>
-        <el-button type="primary" @click='editUsersSummit'>确 定</el-button>
+        <el-button type="primary" @click="editUsersSummit">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close='setRoleClose'>
+      <div>
+        <p>角色名称：{{userInfo.username}}</p>
+        <p>角色描述：{{userInfo.role_name}}</p>
+        <p>
+          分配新角色：
+          <el-select v-model="selectRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -178,7 +210,15 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      // 分配角色对话框显示与否
+      setRoleDialogVisible: false,
+      // 分配角色的用户信息
+      userInfo: {},
+      // 角色信息列表
+      roleList: [],
+      // 分配角色下拉列表选中的角色id
+      selectRoleId: ''
     }
   },
   created () {
@@ -255,10 +295,13 @@ export default {
       // 提交之前要先进行表单预验证
       this.$refs.selectEditRef.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.axios.put(`users/${this.selectEdit.id}`, {
-          email: this.selectEdit.email,
-          mobile: this.selectEdit.mobile
-        })
+        const { data: res } = await this.axios.put(
+          `users/${this.selectEdit.id}`,
+          {
+            email: this.selectEdit.email,
+            mobile: this.selectEdit.mobile
+          }
+        )
         if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
         // 更新成功后要 关闭对话框 提示用户更新成功 重新渲染列表
         this.showEdit = false
@@ -268,16 +311,44 @@ export default {
     },
     // 删除用户
     async delUser (id) {
-      const confirm = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).catch(err => err)
+      const confirm = await this.$confirm(
+        '此操作将永久删除该用户, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
       if (confirm !== 'confirm') return this.$message.info('已取消删除')
       const { data: res } = await this.axios.delete(`users/${id}`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.$message.success('删除成功')
       this.getUsersList()
+    },
+    // 分配角色
+    async setRole (role) {
+      this.setRoleDialogVisible = true
+      this.userInfo = role
+      const { data: res } = await this.axios.get('/roles')
+      this.roleList = res.data
+    },
+    // 点击确定按钮保存分配角色信息
+    async saveRoleInfo () {
+      if (!this.selectRoleId) return this.$message.error('请选择角色')
+      const { data: res } = await this.axios.put(`users/${this.userInfo.id}/role`, {
+        id: this.userInfo.id,
+        rid: this.selectRoleId
+      })
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.$message.success('更新角色成功')
+      this.getUsersList()
+      this.setRoleDialogVisible = false
+    },
+    // 关闭分配角色对话框
+    setRoleClose () {
+      this.userInfo = {}
+      this.selectRoleId = ''
     }
   }
 }
