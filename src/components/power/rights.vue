@@ -41,7 +41,6 @@ export default {
       const { data: res } = await this.axios.get('/rights/list')
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.rightsList = res.data
-      console.log(this.rightsList)
     }
   }
 }

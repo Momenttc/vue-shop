@@ -284,7 +284,6 @@ export default {
       const { data: res } = await this.axios.get(`/users/${id}`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.selectEdit = res.data
-      this.showEdit = true
     },
     // 关闭编辑用户表单重置功能
     editDialogClose () {
