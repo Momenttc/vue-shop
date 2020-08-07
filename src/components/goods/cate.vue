@@ -11,7 +11,7 @@
       <!-- 添加分类按钮 -->
       <el-row>
         <el-col>
-          <el-button type="primary" @click="addCatDialogVisible = !addCatDialogVisible">添加分类</el-button>
+          <el-button type="primary" @click="addCate">添加分类</el-button>
         </el-col>
       </el-row>
       <!-- 表单区域 -->
@@ -92,7 +92,7 @@
       </el-form>
       <span slot="footer">
         <el-button @click="addCatDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCate">确 定</el-button>
+        <el-button type="primary" @click="addCateSumit">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -250,9 +250,13 @@ export default {
       this.addCateInfo.cat_pid = 0
       this.addCateInfo.cat_level = 0
     },
-    // 添加分类
+    // 添加分类按钮
     addCate () {
-      console.log(this.$refs.addCateRef)
+      this.getParentCateList()
+      this.addCatDialogVisible = true
+    },
+    // 添加分类并确认
+    addCateSumit () {
       this.$refs.addCateRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.axios.post(
@@ -261,16 +265,18 @@ export default {
         )
         if (res.meta.status !== 201) return this.$message.error(res.meta.msg)
         this.$message.success('添加分类成功')
-        this.getParentCateList()
         this.addCatDialogVisible = false
       })
     }
+
   }
 }
 </script>
 <style lang="less">
-.el-cascader{
+.cate{
+  .el-cascader{
   width: 100%;
+}
 }
 .el-scrollbar.el-cascader-menu{
   height: 200px;
