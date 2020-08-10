@@ -228,7 +228,7 @@ export default {
         const { data: res } = await this.axios.post('goods', form)
         if (res.meta.status !== 201) return this.$message.error(res.meta.msg)
         this.$message.success('添加成功')
-        this.$routergit.push('/goods')
+        this.$router.push('/goods')
       })
     }
   },
