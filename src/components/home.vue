@@ -23,7 +23,6 @@
             :collapse='isCollapse'
             :collapse-transition='false'
             router
-            :default-active='$route.path'
           >
             <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id" >
               <template slot="title">
@@ -37,6 +36,8 @@
                 :index="'/'+subItem.path"
                 v-for="subItem in item.children"
                 :key="subItem.id"
+                @click='saveActivePath("/"+subItem.path)'
+                :default-active='activePath'
               >
                 <template slot="title">
                   <!-- 图标 -->
@@ -68,11 +69,13 @@ export default {
         102: 'el-icon-s-order',
         145: 'el-icon-s-marketing'
       },
-      isCollapse: false
+      isCollapse: false,
+      activePath: ''
     }
   },
   created () {
     this.getMenuList()
+    window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
@@ -89,6 +92,10 @@ export default {
     // 点击按钮切换菜单的折叠与展开
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 保存链接的激活状态
+    saveActivePath (path) {
+      window.sessionStorage.setItem('activePath', path)
     }
   }
 }
