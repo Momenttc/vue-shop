@@ -1,17 +1,34 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from './../components/login'
-import Home from './../components/home'
-import Welcome from './../components/welcome'
-import Users from './../components/users/users'
-import Rights from './../components/power/rights'
-import Roles from './../components/power/roles'
-import Cate from './../components/goods/cate'
-import Params from './../components/goods/params'
-import List from './../components/goods/list'
-import Add from './../components/goods/add'
-import Order from './../components/order/order'
-import Report from './../components/report/report'
+
+const Login = () => import(/* webpackChunkName: "Login_Home_Welcome" */ './../components/login')
+const Home = () => import(/* webpackChunkName: "Login_Home_Welcome" */ './../components/home')
+const Welcome = () => import(/* webpackChunkName: "Login_Home_Welcome" */ './../components/welcome')
+// import Login from './../components/login'
+// import Home from './../components/home'
+// import Welcome from './../components/welcome'
+
+const Users = () => import(/* webpackChunkName: "Users" */ './../components/users/users')
+// import Users from './../components/users/users'
+
+const Rights = () => import(/* webpackChunkName: "Rights_Roles" */ './../components/power/rights')
+const Roles = () => import(/* webpackChunkName: "Rights_Roles" */ './../components/power/roles')
+// import Rights from './../components/power/rights'
+// import Roles from './../components/power/roles'
+
+const Cate = () => import(/* webpackChunkName: "Cate_Params_List_Add" */ './../components/goods/cate')
+const Params = () => import(/* webpackChunkName: "Cate_Params_List_Add" */ './../components/goods/params')
+const List = () => import(/* webpackChunkName: "Cate_Params_List_Add" */ './../components/goods/list')
+const Add = () => import(/* webpackChunkName: "Cate_Params_List_Add" */ './../components/goods/add')
+// import Cate from './../components/goods/cate'
+// import Params from './../components/goods/params'
+// import List from './../components/goods/list'
+// import Add from './../components/goods/add'
+
+const Order = () => import(/* webpackChunkName: "Order_Report" */ './../components/order/order')
+const Report = () => import(/* webpackChunkName: "Order_Report" */ './../components/report/report')
+// import Order from './../components/order/order'
+// import Report from './../components/report/report'
 Vue.use(VueRouter)
 
 const routes = [
@@ -39,9 +56,9 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-// 挂载路由导航守卫
+// 挂载路由导航守卫,to表示将要访问的路径，from表示从哪里来，next是下一个要做的操作 next('/login')强制跳转login
 router.beforeEach((to, form, next) => {
-  if (to.path === '/login') next()
+  if (to.path === '/login') return next()
   const tokenStr = window.sessionStorage.getItem('token')
   if (!tokenStr) return next('/login')
   next()

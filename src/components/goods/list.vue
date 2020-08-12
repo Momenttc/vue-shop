@@ -22,7 +22,7 @@
         </el-col>
       </el-row>
       <!-- 表格区域 -->
-      <el-table :data="goodsList" style="width: 100%" border stripe>
+      <el-table :data="goodsList" style="width: 100%" border stripe row-key="id">
         <el-table-column type='index'></el-table-column>
         <el-table-column prop="goods_name" label="商品名称"></el-table-column>
         <el-table-column prop="goods_price" label="商品价格(元)" width="100px"></el-table-column>

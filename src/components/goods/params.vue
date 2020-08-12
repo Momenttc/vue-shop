@@ -32,7 +32,7 @@
             :disabled="isBtnDisable"
             @click="addDialogVisible = !addDialogVisible"
           >添加参数</el-button>
-          <el-table :data="manyData" border stripe>
+          <el-table :data="manyData" border stripe row-key="id">
             <!-- 展开行 -->
             <el-table-column type="expand">
               <template v-slot="slotProps">

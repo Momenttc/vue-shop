@@ -15,7 +15,7 @@
         </el-col>
       </el-row>
       <!-- 角色表格区域 -->
-      <el-table :data="roleList" border stripe>
+      <el-table :data="roleList" border stripe row-key="id">
         <!-- 扩展 -->
         <el-table-column type="expand">
           <template v-slot="slotProps">

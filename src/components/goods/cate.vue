@@ -15,7 +15,7 @@
         </el-col>
       </el-row>
       <!-- 表单区域 -->
-      <el-table :data="getCateList" row-key="cat_id" border :tree-props="{children: 'children'}">
+      <el-table :data="getCateList" row-key="cat_id" border :tree-props="{children: 'children'}" >
         <el-table-column prop="cat_name" label="分类名称"></el-table-column>
         <el-table-column label="是否有效">
           <template v-slot="slotProps">

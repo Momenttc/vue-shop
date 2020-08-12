@@ -3,16 +3,13 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import './plugins/element.js'
 import './assets/css/global.css'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+// import ElementUI from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor'
-import 'quill/dist/quill.core.css' // import styles
-import 'quill/dist/quill.snow.css' // for snow theme
-import 'quill/dist/quill.bubble.css' // for bubble theme
 
-Vue.use(ElementUI)
+import Nprogress from 'nprogress'
+
+// Vue.use(ElementUI)
 Vue.use(VueAxios, axios)
 Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
@@ -29,7 +26,12 @@ Vue.filter('dataFormat', function (originVal) {
 // axios.defaults.baseURL = 'http://119.23.53.78:8888/api/private/v1/'
 axios.defaults.baseURL = 'http://47.115.124.102:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
+  Nprogress.start()
   config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
+axios.interceptors.response.use((config) => {
+  Nprogress.done()
   return config
 })
 new Vue({
